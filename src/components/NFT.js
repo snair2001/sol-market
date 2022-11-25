@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import css from "../styles/NFT.module.css"
-import { Button, Modal } from 'react-bootstrap'
+import { Button, Modal, ModalFooter } from 'react-bootstrap'
 import { FaEthereum } from "react-icons/fa"
 import { ethers } from 'ethers'
 import abi from "../build/NFTSale.json"
@@ -25,12 +25,12 @@ function NFT(img) {
     }, [])
 
 
+    
     async function connectWallet() {
         const selectedAccount = await window.ethereum.request({ method: "eth_requestAccounts" })
         setselectedAcc(selectedAccount[0])
 
     }
-
 
 
     async function handleBuy() {
@@ -45,9 +45,22 @@ function NFT(img) {
         }
     }
     return (
-        <div className={css.NFT}>
-            <Modal show={txSuccess === false}>
-                <Modal.Header closeButton>Something went wrong</Modal.Header>
+        <div className={isBought ? css.sold : css.NFT}>
+            <Modal show={txSuccess === false} onHide={() => {settxSuccess("")}}>
+
+            <Modal.Dialog>
+                <Modal.Header closeButton>
+                    <Modal.Title>Something went wrong</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    Cannot procees given instruction please refresh the page and try again
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button onClick={() => {settxSuccess("")}} variant="secondary">Close</Button>
+                </Modal.Footer>
+            </Modal.Dialog>
             </Modal>
             <header style={{ textAlign: "center" }}> {`Ape #${Math.floor(Math.random() * 10000)}`}</header>
             <img src={img.src} alt={"loading.."} style={{ height: "13rem" }} className={css.NFT} />
@@ -55,10 +68,10 @@ function NFT(img) {
                 isBought ?
                     <div style={{ fontSize: "1.5rem", textAlign: "center", backgroundColor: "green" }}>Sold !</div> :
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontSize: "30px", textAlign: "left" }}>
-                            Price : {Math.floor(Math.random() * 10 + 1)} <FaEthereum style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "0.5rem" }} />
+                        <span style={{ fontSize: "1.3rem", textAlign: "left" }}>
+                            Price : 0.1 <FaEthereum style={{ fontSize: "1rem", textAlign: "center", marginBottom: "0.5rem" }} />
                         </span>
-                        <Button style={{}} onClick={handleBuy}>Buy</Button>
+                        <Button  onClick={handleBuy}>Buy</Button>
                     </div>
             }
         </div>

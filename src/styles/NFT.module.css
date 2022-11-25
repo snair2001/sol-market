@@ -4,7 +4,7 @@
     flex-direction: column;
     margin: 1.3rem;
     font-size: 2rem;
-    font-family:  'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     background-color: rgba(0, 0, 255, 0.219);
     background-size: cover;
 }
@@ -15,4 +15,16 @@
     display: flex;
     margin-top: 10vh;
     flex-wrap: wrap;
+}
+
+.sold {
+    height: 22rem;
+    display: flex;
+    flex-direction: column;
+    margin: 1.3rem;
+    font-size: 2rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    opacity: 0.4;
+    background-color: rgba(0, 0, 255, 0.219);
+    background-size: cover;
 }
