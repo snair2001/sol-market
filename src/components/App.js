@@ -2,10 +2,17 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import NFT from "./NFT";
 import css from "../styles/NFT.module.css"
 import { Button } from "react-bootstrap";
-import { useState } from "react";
-import { ContractExecuteTransaction, Hbar, ContractFunctionParameters, } from "@hashgraph/sdk"
-import { BladeSigner, HederaNetwork } from "@bladelabs/blade-web3.js"
+import { useEffect, useState } from "react";
+import { clusterApiUrl, Connection, PublicKey, Keypair, LAMPORTS_PER_SOL, Transaction, SystemProgram, } from "@solana/web3.js"
+import { createMint, getOrCreateAssociatedTokenAccount, mintTo, transfer, Account, getMint, getAccount, createMintToInstruction } from "@solana/spl-token"
 
+
+
+const NETWORK = clusterApiUrl("devnet");
+const provider = window.phantom.solana || undefined
+const connection = new Connection(NETWORK);
+
+window.Buffer = require("buffer").Buffer
 
 function App() {
 
@@ -15,33 +22,84 @@ function App() {
   for (let i = 1; i <= 5; i++) {
     paths.push(require(`../images/${i}.png`))
   }
-  const bladeSigner = new BladeSigner();
 
 
   async function buy() {
-    try {
-      let contractBuyTx = new ContractExecuteTransaction()
-        .setContractId("0.0.49013954")
-        .setGas(10000000)
-        .setFunction("buy", new ContractFunctionParameters().addUint8(1))
-        .setPayableAmount(new Hbar(1))
 
-      await bladeSigner.call(contractBuyTx)
+    try {
+      const wallet = Keypair.generate()
+      let connection = new Connection(clusterApiUrl("devnet"), "confirmed")
+
+      const aidropsig = await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL / 2)
+
+      await connection.confirmTransaction(aidropsig)
+
+      let mint = await createMint(
+        connection,
+        wallet,
+        wallet.publicKey,
+        null,
+        0
+      );
+
+      console.log("NFT Mint : " + mint.toBase58());
+
+      let tokenAcc = await getOrCreateAssociatedTokenAccount(connection,
+        wallet,
+        mint,
+        wallet.publicKey
+      );
+
+      console.log("Token acc : " + tokenAcc.address.toBase58());
+
+      const sig = await mintTo(
+        connection,
+        wallet,
+        new PublicKey(mint.toBase58()),
+        new PublicKey(tokenAcc.address.toBase58()),
+        wallet.publicKey,
+        1
+      )
+
+      const tokens = await getAccount(connection, tokenAcc.address)
+      console.log(tokens);
+
+      const toTokenAcc = await getOrCreateAssociatedTokenAccount(connection, wallet, mint, new PublicKey(activeAcc))
+
+      console.log("user token acc : " + toTokenAcc.address);
+
+      const sendtokens = await transfer(
+        connection,
+        wallet,
+        tokenAcc.address,
+        toTokenAcc.address,
+        wallet.publicKey,
+        1
+      )
+
+      console.log("user send token sig : " + sendtokens);
+
+
+      const usertokens = await getAccount(connection, toTokenAcc.address)
+      console.log("user has : " + usertokens.amount);
+
       return true;
-    }
-    catch {
-      return false;
+
+    } catch (e) {
+      console.log(e);
     }
   }
 
   async function connectWallet() {
-    const params = {
-      network: HederaNetwork.Testnet,
-      dAppCode: "Nft wallet"
+    try {
+      const address = await provider.connect();
+      setactiveAcc(address.publicKey)
     }
-    await bladeSigner.createSession(params);
-    let accId = bladeSigner.getAccountId();
-    setactiveAcc(accId.toString())
+    catch (e) {
+      console.log(e);
+    }
+
+
   }
 
 
@@ -54,8 +112,8 @@ function App() {
           activeAcc == null ?
             <Button style={{ margin: "1rem" }} onClick={connectWallet}>Connect Wallet</Button>
             :
-            <div style={{ fontSize: "larger", margin: "1rem", backgroundColor: "rgba(0, 0, 0, 0.488)", minHeight: "3rem", minWidth: "20rem", display: "flex", alignItems: "center", justifyContent: "center", color: "black" }}>
-              Account ID :<span>{activeAcc}</span>
+            <div style={{ fontSize: "1rem", margin: "1rem", backgroundColor: "cyan", minHeight: "3rem", minWidth: "10rem", display: "flex", alignItems: "center", justifyContent: "center", color: "black" }}>
+              <span>{activeAcc.toBase58().slice(0, 10) + "...."}</span>
             </div>
         }
       </div>

@@ -45,7 +45,7 @@ function NFT({ src, buy }) {
                     <div style={{ fontSize: "1.5rem", textAlign: "center", backgroundColor: "green" }}>Sold !</div> :
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         <span style={{ fontSize: "1.3rem", textAlign: "left" }}>
-                            Price : 1 HBAR
+                            Price : 1 SOL
                         </span>
                         <Button onClick={handleBuy}>Buy</Button>
                     </div>
