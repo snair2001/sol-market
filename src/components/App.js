@@ -7,9 +7,8 @@ import { clusterApiUrl, Connection, PublicKey, Keypair, LAMPORTS_PER_SOL, Transa
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo, transfer, Account, getMint, getAccount, createMintToInstruction } from "@solana/spl-token"
 
 
-
+let provider;
 const NETWORK = clusterApiUrl("devnet");
-const provider = window.phantom.solana || undefined
 const connection = new Connection(NETWORK);
 
 window.Buffer = require("buffer").Buffer
@@ -19,10 +18,32 @@ function App() {
   const [activeAcc, setactiveAcc] = useState(null)
   let paths = []
 
+  useEffect(() => {
+
+    const getProvider = () => {
+      if ('phantom' in window) {
+        provider = window.phantom?.solana;
+        console.log("found");
+        return true
+      } else {
+        console.log("not found");
+        return false
+      }
+    }
+
+    const wallet = getProvider()
+
+    if (!wallet) {
+      setTimeout(() => {
+        getProvider()
+      }, 2000);
+    }
+  }, [])
+
+
   for (let i = 1; i <= 5; i++) {
     paths.push(require(`../images/${i}.png`))
   }
-
 
   async function buy() {
 
@@ -101,7 +122,6 @@ function App() {
 
 
   }
-
 
   return (
     <div className="App">
