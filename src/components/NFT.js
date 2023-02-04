@@ -38,7 +38,7 @@ function NFT({ src, buy }) {
                 </Modal.Dialog>
             </Modal>
 
-            <header style={{ textAlign: "center" }}> {`Ape #${Math.floor(Math.random() * 10000)}`}</header>
+            <header style={{ textAlign: "center" }}> {`NFT #${Math.floor(Math.random() * 10000)}`}</header>
             <img src={src} alt={"loading.."} style={{ height: "13rem" }} className={css.NFT} />
             {
                 isBought ?
