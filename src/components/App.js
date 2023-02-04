@@ -42,7 +42,7 @@ function App() {
 
 
   for (let i = 1; i <= 5; i++) {
-    paths.push(require(`../images/${i}.png`))
+    paths.push(require(`../NFTPictures/${i}.jpg`))
   }
 
   async function buy() {
@@ -119,8 +119,6 @@ function App() {
     catch (e) {
       console.log(e);
     }
-
-
   }
 
   return (
